@@ -108,7 +108,7 @@ class RateBarChart extends StatelessWidget {
                     topTitles: const charts.AxisTitles(sideTitles: charts.SideTitles(showTitles: false)),
                     rightTitles: const charts.AxisTitles(sideTitles: charts.SideTitles(showTitles: false)),
                   ),
-                  gridData: charts.FlGridData(
+                  gridData: const charts.FlGridData(
                     show: true,
                     drawVerticalLine: false,
                   ),

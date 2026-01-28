@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:flutter/services.dart';
 import '../models/deudor_model.dart';
 
@@ -283,7 +284,7 @@ class DataService {
   Future<List<InteractionData>> getInteraccionDescuentoAntiguedad() async {
     final deudores = await loadDeudores();
     
-    // Dividir antigüedad en terciles
+    // Dividir antigüedad en terciles (como pd.qcut en el notebook)
     final diasMora = deudores.map((d) => d.diasMora).toList()..sort();
     final n = diasMora.length;
     final tercil1 = diasMora[(n / 3).floor()];
@@ -295,12 +296,19 @@ class DataService {
       return 'Alta';
     }
     
-    // Dividir descuento en quintiles
+    // Dividir descuento en quintiles REALES (como pd.qcut en el notebook)
+    final descuentos = deudores.map((d) => d.descuentoOfrecido).toList()..sort();
+    final nDesc = descuentos.length;
+    final q1 = descuentos[(nDesc * 0.2).floor()];
+    final q2 = descuentos[(nDesc * 0.4).floor()];
+    final q3 = descuentos[(nDesc * 0.6).floor()];
+    final q4 = descuentos[(nDesc * 0.8).floor()];
+    
     String getGrupoDescuento(double desc) {
-      if (desc <= 0.2) return '0-20%';
-      if (desc <= 0.4) return '20-40%';
-      if (desc <= 0.6) return '40-60%';
-      if (desc <= 0.8) return '60-80%';
+      if (desc <= q1) return '0-20%';
+      if (desc <= q2) return '20-40%';
+      if (desc <= q3) return '40-60%';
+      if (desc <= q4) return '60-80%';
       return '80-100%';
     }
     
@@ -454,24 +462,10 @@ class DataService {
       denomY += dy * dy;
     }
     
-    final denominator = (denomX * denomY);
-    if (denominator == 0) return 0;
+    // Fórmula correcta de correlación de Pearson: r = Σ(xi-x̄)(yi-ȳ) / sqrt(Σ(xi-x̄)² * Σ(yi-ȳ)²)
+    final denomProduct = denomX * denomY;
+    if (denomProduct <= 0) return 0;
     
-    return numerator / (denominator > 0 ? denominator : 1).sqrt();
-  }
-}
-
-extension on num {
-  double sqrt() => this < 0 ? 0 : toDouble().sqrt2();
-}
-
-extension on double {
-  double sqrt2() {
-    if (this <= 0) return 0;
-    double guess = this / 2;
-    for (int i = 0; i < 20; i++) {
-      guess = (guess + this / guess) / 2;
-    }
-    return guess;
+    return numerator / math.sqrt(denomProduct);
   }
 }

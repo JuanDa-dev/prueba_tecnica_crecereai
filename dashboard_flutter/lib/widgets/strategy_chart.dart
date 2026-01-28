@@ -114,7 +114,7 @@ class StrategyChart extends StatelessWidget {
                     topTitles: const charts.AxisTitles(sideTitles: charts.SideTitles(showTitles: false)),
                     rightTitles: const charts.AxisTitles(sideTitles: charts.SideTitles(showTitles: false)),
                   ),
-                  gridData: charts.FlGridData(show: true, drawVerticalLine: false),
+                  gridData: const charts.FlGridData(show: true, drawVerticalLine: false),
                   borderData: charts.FlBorderData(show: false),
                   barTouchData: charts.BarTouchData(
                     enabled: true,

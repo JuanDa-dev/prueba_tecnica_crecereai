@@ -14,8 +14,14 @@ class HeatmapChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Extraer variables únicas
-    final variables = data.map((d) => d.variable1).toSet().toList();
+    // Extraer variables únicas MANTENIENDO EL ORDEN original
+    final seen = <String>{};
+    final variables = <String>[];
+    for (final d in data) {
+      if (seen.add(d.variable1)) {
+        variables.add(d.variable1);
+      }
+    }
     final n = variables.length;
     
     return Card(
